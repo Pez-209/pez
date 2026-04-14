@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>pez</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --border: #222222;
+      --accent: #e8e0d0;
+      --muted: #555;
+      --hover-bg: #1a1a1a;
+      --glow: rgba(232, 224, 208, 0.08);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--accent);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 60px 20px 80px;
+      overflow-x: hidden;
+    }
+
+    /* grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.4;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    /* ── HERO CARD (Roblox cover) ── */
+    .hero {
+      width: 100%;
+      position: relative;
+      border-radius: 20px 20px 0 0;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      background: #000;
+      aspect-ratio: 16/9;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 0.85;
+      transition: opacity 0.3s;
+    }
+
+    .hero:hover img { opacity: 1; }
+
+    .hero-label {
+      position: absolute;
+      bottom: 14px;
+      left: 18px;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(232,224,208,0.6);
+    }
+
+    .hero-roblox-btn {
+      position: absolute;
+      bottom: 10px;
+      right: 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(10,10,10,0.85);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 13px;
+      text-decoration: none;
+      color: var(--accent);
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      transition: background 0.2s, border-color 0.2s;
+      backdrop-filter: blur(6px);
+    }
+
+    .hero-roblox-btn:hover {
+      background: rgba(232,224,208,0.1);
+      border-color: rgba(232,224,208,0.3);
+    }
+
+    .hero-roblox-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* ── PROFILE BLOCK ── */
+    .profile-block {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: none;
+      padding: 28px 28px 24px;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .name {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .handle {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── LINKS SECTION ── */
+    .links-section {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 20px 20px;
+      overflow: hidden;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 16px 28px 10px;
+    }
+
+    .link-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 28px;
+      text-decoration: none;
+      color: var(--accent);
+      transition: background 0.18s;
+      position: relative;
+      border-top: 1px solid var(--border);
+    }
+
+    .link-item:first-of-type { border-top: none; }
+
+    .link-item:hover {
+      background: var(--hover-bg);
+    }
+
+    .link-item:hover .link-arrow {
+      transform: translate(3px, -3px);
+      opacity: 1;
+    }
+
+    .link-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.18s;
+    }
+
+    .link-item:hover .link-icon { background: #2a2a2a; }
+
+    .link-icon svg { width: 18px; height: 18px; }
+
+    .link-text { flex: 1; }
+    .link-name {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      display: block;
+    }
+    .link-sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      display: block;
+      margin-top: 2px;
+    }
+
+    .link-arrow {
+      font-size: 14px;
+      color: var(--muted);
+      transition: transform 0.18s, opacity 0.18s;
+      opacity: 0.4;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      margin-top: 28px;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      animation: fadeUp 1s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    
+    <div class="hero">
+      <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/wAARCAOABUADASIAAhEBAxEB/8QAHQABAAEEAwEAAAAAAAAAAAAAAAcBAgYIAwQFCf/EAE4QAQABAwMDAQYEAgcFBAUNAQABAgMEBQYRBxIhMQgTIkFRYRQycYFCkRUjUmKCobEJFiRykjOiwfAXY8LR4RgnNDU3Q0RTdoOTsrPx/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAEC/8QAFxEBAQEBAAAAAAAAAAAAAAAAAAERMf/aAAwDAQACEQMRAD8A0yAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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" alt="avatar">
+      <span class="hero-label">roblox</span>
+      <a class="hero-roblox-btn" href="https://www.roblox.com/users/4433908340/profile" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5.003 3L3 21l16-4.001L21 3 5.003 3zm9.557 11.219l-5.268 1.317 1.317-5.268 5.268-1.317-1.317 5.268z" fill="currentColor"/>
+        </svg>
+        roblox profile
+      </a>
+    </div>
+
+    <!-- Profile -->
+    <div class="profile-block">
+      <div class="name">pez</div>
+      <div class="handle">
+
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Links -->
+    <div class="links-section">
+      <div class="section-label">socials</div>
+
+      <!-- Instagram -->
+      <a class="link-item" href="https://www.instagram.com/leonx024/" target="_blank" rel="noopener">
+        <div class="link-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="currentColor" stroke-width="1.8"/>
+            <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/>
+            <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="link-text">
+          <span class="link-name">Instagram</span>
+          <span class="link-sub">@leonx024</span>
+        </div>
+        <span class="link-arrow">↗</span>
+      </a>
+
+      <!-- TikTok -->
+      <a class="link-item" href="https://www.tiktok.com/@leontxsss" target="_blank" rel="noopener">
+        <div class="link-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.31 6.31 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.27 8.27 0 004.84 1.55V6.79a4.85 4.85 0 01-1.07-.1z"/>
+          </svg>
+        </div>
+        <div class="link-text">
+          <span class="link-name">TikTok</span>
+          <span class="link-sub">@leontxsss</span>
+        </div>
+        <span class="link-arrow">↗</span>
+      </a>
+
+      <!-- Discord -->
+      <a class="link-item" href="https://discord.com/users/705640222704140339" target="_blank" rel="noopener">
+        <div class="link-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20.317 4.37a19.79 19.79 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+          </svg>
+        </div>
+        <div class="link-text">
+          <span class="link-name">Discord</span>
+          <span class="link-sub">705640222704140339</span>
+        </div>
+        <span class="link-arrow">↗</span>
+      </a>
+
+      <!-- GitHub -->
+      <a class="link-item" href="https://github.com/Pez-209" target="_blank" rel="noopener">
+        <div class="link-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+          </svg>
+        </div>
+        <div class="link-text">
+          <span class="link-name">GitHub</span>
+          <span class="link-sub">Pez-209</span>
+        </div>
+        <span class="link-arrow">↗</span>
+      </a>
+
+    </div>
+  </div>
+
+  <footer></footer>
+</body>
+</html>
